@@ -1,8 +1,9 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import colors from 'colors'
-import products from './data/products.js'
 import connectDB from './config/db.js'
+import productRoutes from './routes/productRoutes.js'
+import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 
 dotenv.config()
 
@@ -10,16 +11,14 @@ connectDB()
 
 const app = express()
 
-// fetch all products
-app.get('/api/products', (req, res) => {
-  res.json(products)
-})
+// App routes
+app.use('/api/products', productRoutes)
 
-// fetch single product
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find((p) => p._id === req.params.id)
-  res.json(product)
-})
+// Middleware
+// 404 Error
+app.use(notFound)
+// return 505 error code instead of html response from server
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 
