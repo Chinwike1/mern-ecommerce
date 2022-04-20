@@ -1,31 +1,40 @@
 import { Link, useParams } from 'react-router-dom'
 import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap'
 import Rating from '../components/Rating'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { getProductById } from '../features/products/productsThunk'
+import Loader from '../components/Loader'
+import Message from '../components/Message'
 
 const ProductScreen = () => {
   const { id } = useParams()
 
-  const [product, setProduct] = useState([])
+  const dispatch = useDispatch()
+  const {
+    product = [],
+    loading,
+    error,
+  } = useSelector((state) => state.products)
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      const { data } = await axios.get(`/api/products/${id}`)
-      console.log(id)
-      setProduct(data)
-    }
-    fetchProduct()
+    dispatch(getProductById(id))
   }, [id])
 
   return (
     <>
+      {error && <Message variant='danger'>{error}</Message>}
       <Link className='btn btn-light my-3' to='/'>
         <i className='fa fa-arrow-left' /> Go Back
       </Link>
       <Row>
         <Col md={6}>
-          <Image src={product.image} alt={product.name} fluid />
+          {loading ? (
+            <Loader />
+          ) : (
+            <Image src={product.image} alt={product.name} fluid />
+          )}
         </Col>
         <Col md={3}>
           <ListGroup variant='flush'>
