@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { addItemToCartThunk } from './cartThunk'
 
 const cartItems = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
