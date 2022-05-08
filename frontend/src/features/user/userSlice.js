@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { userLogout, userLogin, registerUser } from './userThunk'
+import {
+  userLogout,
+  userLogin,
+  registerUser,
+  updateUserProfile,
+  getUserDetails,
+} from './userThunk'
 
 const userToken = localStorage.getItem('userToken')
   ? localStorage.getItem('userToken')
@@ -10,6 +16,7 @@ const initialState = {
   userToken,
   userInfo: null,
   error: null,
+  success: null,
 }
 
 const userSlice = createSlice({
@@ -20,27 +27,27 @@ const userSlice = createSlice({
     // user login
     [userLogin.pending]: (state) => {
       state.loading = true
-      state.error = ''
+      state.error = null
     },
     [userLogin.fulfilled]: (state, { payload }) => {
       state.loading = false
       state.userInfo = payload
       state.userToken = payload.token
-      state.error = ''
+      state.error = null
     },
     [userLogin.rejected]: (state, { payload }) => {
       state.loading = false
       state.error = payload
     },
     // user logout
-    [userLogout.fulfilled]: (state) => {
+    [userLogout.fulfilled]: (state, { payload }) => {
       state.loading = false
-      state.userInfo = null
-      state.userToken = null
-      state.error = ''
+      state.userInfo = payload.userInfo
+      state.userToken = payload.userToken
+      state.error = null
     },
     // register user
-    [registerUser.pending]: (state, { payload }) => {
+    [registerUser.pending]: (state) => {
       state.loading = true
       state.error = ''
     },
@@ -48,10 +55,40 @@ const userSlice = createSlice({
       state.loading = false
       state.userInfo = payload
       state.userToken = payload.token
-      state.error = ''
+      state.error = null
     },
     [registerUser.rejected]: (state, { payload }) => {
       state.loading = false
+      state.error = payload
+    },
+    // update user profile
+    [updateUserProfile.pending]: (state) => {
+      state.loading = true
+      state.error = null
+      state.success = false
+    },
+    [updateUserProfile.fulfilled]: (state, { payload }) => {
+      state.loading = false
+      state.userInfo = payload
+      state.userToken = payload.token
+      state.error = null
+      state.success = true
+    },
+    [updateUserProfile.rejected]: (state, { payload }) => {
+      state.loading = false
+      state.error = payload
+      state.success = false
+    },
+    // get user details
+    [getUserDetails.pending]: (state) => {
+      state.loading = true
+      state.error = null
+    },
+    [getUserDetails.fulfilled]: (state, { payload }) => {
+      state.loading = false
+      state.userInfo = payload
+    },
+    [getUserDetails.rejected]: (state, { payload }) => {
       state.error = payload
     },
   },

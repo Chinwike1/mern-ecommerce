@@ -1,16 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import { Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
 // import SearchBox from './SearchBox'
-import { userLogout } from '../features/user/userThunk'
+import { getUserDetails, userLogout } from '../features/user/userThunk'
 
 const Header = () => {
+  const { userInfo, userToken } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
-  const user = useSelector((state) => state.user)
-  const { userInfo, userToken } = user
+  /* 
+    Header component is responsible for fetching
+   the user's details once the broswer finds a token
+  */
+  useEffect(() => {
+    if (userToken) {
+      dispatch(getUserDetails('profile'))
+    }
+  }, [userToken, dispatch])
 
   const logoutHandler = () => {
     dispatch(userLogout())
@@ -32,8 +40,8 @@ const Header = () => {
                   <i className='fas fa-shopping-cart'></i> Cart
                 </Nav.Link>
               </LinkContainer>
-              {userToken && userInfo ? (
-                <NavDropdown title={userInfo.name} id='username'>
+              {userInfo ? (
+                <NavDropdown title={userInfo?.name} id='username'>
                   <LinkContainer to='/profile'>
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>
@@ -48,7 +56,7 @@ const Header = () => {
                   </Nav.Link>
                 </LinkContainer>
               )}
-              {userInfo && userInfo.isAdmin && (
+              {userInfo?.isAdmin && (
                 <NavDropdown title='Admin' id='adminmenu'>
                   <LinkContainer to='/admin/userlist'>
                     <NavDropdown.Item>Users</NavDropdown.Item>
