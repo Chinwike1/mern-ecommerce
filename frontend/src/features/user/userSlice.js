@@ -87,6 +87,7 @@ const userSlice = createSlice({
     [getUserDetails.fulfilled]: (state, { payload }) => {
       state.loading = false
       state.userInfo = payload
+      state.userInfo.token = state.userToken
     },
     [getUserDetails.rejected]: (state, { payload }) => {
       state.error = payload
